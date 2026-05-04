@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>BLOCK BREAKER</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧱</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ===================== MAIN MENU ===================== -->
+  <div id="screen-menu" class="screen active">
+    <div class="menu-bg">
+      <div class="stars" id="stars"></div>
+      <div class="scan-lines"></div>
+    </div>
+    <div class="menu-content">
+      <div class="logo-container">
+        <div class="logo-sub">— ARCADE CLASSIC —</div>
+        <h1 class="logo">BLOCK<br/><span>BREAKER</span></h1>
+        <div class="logo-glow"></div>
+      </div>
+      <div class="menu-buttons">
+        <button class="btn-primary" id="btn-play">▶ JOUER</button>
+        <button class="btn-secondary" id="btn-scores">🏆 SCORES</button>
+        <button class="btn-secondary" id="btn-settings">⚙️ PARAMÈTRES</button>
+      </div>
+      <div class="menu-info">
+        <span id="menu-best-score">Meilleur score: —</span>
+      </div>
+      <div class="difficulty-selector">
+        <span class="diff-label">DIFFICULTÉ</span>
+        <div class="diff-row">
+          <button class="diff-btn active" data-diff="easy">FACILE</button>
+          <button class="diff-btn" data-diff="normal">NORMAL</button>
+          <button class="diff-btn" data-diff="hard">DIFFICILE</button>
+          <button class="diff-btn" data-diff="ironman">☠ IRONMAN</button>
+        </div>
+      </div>
+      <div class="theme-selector">
+        <span class="diff-label">THÈME</span>
+        <div class="diff-row">
+          <button class="theme-btn active" data-theme="neon">NÉON</button>
+          <button class="theme-btn" data-theme="classic">CLASSIQUE</button>
+          <button class="theme-btn" data-theme="space">SPACE</button>
+          <button class="theme-btn" data-theme="candy">CANDY</button>
+          <button class="theme-btn" data-theme="light">☀ CLAIR</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== GAME SCREEN ===================== -->
+  <div id="screen-game" class="screen">
+    <div class="hud">
+      <div class="hud-left">
+        <div class="hud-item">
+          <div class="hud-label">NIVEAU</div>
+          <div class="hud-value" id="hud-level">1 / 5</div>
+        </div>
+        <div class="hud-item">
+          <div class="hud-label">SCORE</div>
+          <div class="hud-value" id="hud-score">0</div>
+        </div>
+        <div class="hud-item">
+          <div class="hud-label">COMBO</div>
+          <div class="hud-value" id="hud-combo">x1</div>
+        </div>
+      </div>
+      <div class="hud-center">
+        <div id="hud-lives" class="lives-display">❤️❤️❤️</div>
+      </div>
+      <div class="hud-right">
+        <button class="icon-btn" id="btn-pause" title="Pause">⏸</button>
+        <button class="icon-btn" id="btn-mute" title="Son">🔊</button>
+      </div>
+    </div>
+
+    <div class="canvas-wrapper">
+      <canvas id="gameCanvas"></canvas>
+      <div id="overlay-start" class="canvas-overlay">
+        <div class="overlay-text">CLIQUEZ POUR LANCER</div>
+        <div class="overlay-sub">ou appuyez sur ESPACE</div>
+      </div>
+    </div>
+
+    <div class="powerup-bar" id="powerup-bar">
+      <div class="pb-label">POWER-UP ACTIF :</div>
+      <div id="pb-info" class="pb-info">—</div>
+      <div id="pb-timer-bar" class="pb-timer-bar"><div id="pb-timer-fill" class="pb-timer-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- ===================== PAUSE SCREEN ===================== -->
+  <div id="screen-pause" class="screen modal-screen">
+    <div class="modal">
+      <h2 class="modal-title">⏸ PAUSE</h2>
+      <button class="btn-primary" id="btn-resume">▶ REPRENDRE</button>
+      <button class="btn-secondary" id="btn-restart-level">↺ RESTART NIVEAU</button>
+      <button class="btn-secondary" id="btn-to-menu-pause">🏠 MENU</button>
+    </div>
+  </div>
+
+  <!-- ===================== LEVEL COMPLETE ===================== -->
+  <div id="screen-level-complete" class="screen modal-screen">
+    <div class="modal modal-success">
+      <div class="level-stars" id="level-stars">⭐⭐⭐</div>
+      <h2 class="modal-title">NIVEAU TERMINÉ !</h2>
+      <div class="modal-stats">
+        <div class="stat-row"><span>Score</span><span id="lc-score">0</span></div>
+        <div class="stat-row"><span>Combo Max</span><span id="lc-combo">x1</span></div>
+        <div class="stat-row"><span>Power-ups</span><span id="lc-powerups">0</span></div>
+      </div>
+      <div class="tip-box" id="tip-box"></div>
+      <button class="btn-primary" id="btn-next-level">NIVEAU SUIVANT ▶</button>
+      <button class="btn-secondary" id="btn-to-menu-lc">🏠 MENU</button>
+    </div>
+  </div>
+
+  <!-- ===================== GAME OVER ===================== -->
+  <div id="screen-gameover" class="screen modal-screen">
+    <div class="modal modal-danger">
+      <div class="go-icon">💀</div>
+      <h2 class="modal-title">GAME OVER</h2>
+      <div class="modal-stats">
+        <div class="stat-row"><span>Score Final</span><span id="go-score">0</span></div>
+        <div class="stat-row"><span>Niveau Atteint</span><span id="go-level">1</span></div>
+        <div class="stat-row"><span>Meilleur Score</span><span id="go-best">0</span></div>
+      </div>
+      <button class="btn-primary" id="btn-retry">↺ RÉESSAYER</button>
+      <button class="btn-secondary" id="btn-to-menu-go">🏠 MENU</button>
+    </div>
+  </div>
+
+  <!-- ===================== WIN SCREEN ===================== -->
+  <div id="screen-win" class="screen modal-screen">
+    <div class="modal modal-success">
+      <div class="win-icon">🏆</div>
+      <h2 class="modal-title">VICTOIRE !</h2>
+      <p class="win-sub">Vous avez complété tous les niveaux !</p>
+      <div class="modal-stats">
+        <div class="stat-row"><span>Score Total</span><span id="win-score">0</span></div>
+        <div class="stat-row"><span>Meilleur Score</span><span id="win-best">0</span></div>
+      </div>
+      <button class="btn-primary" id="btn-play-again">▶ REJOUER</button>
+      <button class="btn-secondary" id="btn-to-menu-win">🏠 MENU</button>
+    </div>
+  </div>
+
+  <!-- ===================== SCORES SCREEN ===================== -->
+  <div id="screen-scores" class="screen modal-screen">
+    <div class="modal modal-wide">
+      <h2 class="modal-title">🏆 LEADERBOARD</h2>
+      <div id="scores-list" class="scores-list"></div>
+      <button class="btn-secondary" id="btn-clear-scores">🗑 Effacer</button>
+      <button class="btn-primary" id="btn-back-scores">← RETOUR</button>
+    </div>
+  </div>
+
+  <!-- ===================== SETTINGS SCREEN ===================== -->
+  <div id="screen-settings" class="screen modal-screen">
+    <div class="modal modal-wide">
+      <h2 class="modal-title">⚙️ PARAMÈTRES</h2>
+      <div class="settings-group">
+        <label>🔊 Volume</label>
+        <input type="range" id="vol-slider" min="0" max="100" value="70" />
+        <span id="vol-value">70%</span>
+      </div>
+      <div class="settings-group">
+        <label>🎵 Musique</label>
+        <button class="toggle-btn active" id="toggle-music" data-state="on">ON</button>
+      </div>
+      <div class="settings-group">
+        <label>📳 Vibrations (mobile)</label>
+        <button class="toggle-btn active" id="toggle-vibration" data-state="on">ON</button>
+      </div>
+      <div class="settings-group">
+        <label>✨ Particules</label>
+        <button class="toggle-btn active" id="toggle-particles" data-state="on">ON</button>
+      </div>
+      <button class="btn-primary" id="btn-back-settings">← RETOUR</button>
+    </div>
+  </div>
+
+  <!-- ===================== TUTORIAL OVERLAY ===================== -->
+  <div id="tutorial-overlay" class="tutorial-overlay hidden">
+    <div class="tutorial-box">
+      <h3>🎮 COMMENT JOUER</h3>
+      <div class="tuto-row"><span class="tuto-key">🖱️ Souris / 👆 Tactile</span><span>Déplacer la raquette</span></div>
+      <div class="tuto-row"><span class="tuto-key">Clic / Tap</span><span>Lancer la balle</span></div>
+      <div class="tuto-row"><span class="tuto-key">ESPACE</span><span>Lancer / Pause</span></div>
+      <div class="tuto-row"><span class="tuto-key">P</span><span>Pause</span></div>
+      <hr/>
+      <div class="tuto-row"><span>⚡ Power-ups tombent des blocs — récupérez-les !</span></div>
+      <div class="tuto-row"><span>🎯 Touchez le bord du paddle pour changer l'angle</span></div>
+      <button class="btn-primary" id="btn-close-tutorial">COMPRIS ! ▶</button>
+    </div>
+  </div>
+
+  <!-- ===================== COMBO POPUP ===================== -->
+  <div id="combo-popup" class="combo-popup hidden"></div>
+
+  <!-- ===================== FLASH OVERLAY ===================== -->
+  <div id="flash-overlay" class="flash-overlay hidden"></div>
+
+  <script src="js/audio.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/blocks.js"></script>
+  <script src="js/powerups.js"></script>
+  <script src="js/ball.js"></script>
+  <script src="js/paddle.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
