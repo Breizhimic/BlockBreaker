@@ -400,9 +400,9 @@ const Game = (() => {
 
   function drawGrid(colors) {
     ctx.save();
-    ctx.globalAlpha = 0.12;
+    ctx.globalAlpha = 0.25;
     ctx.strokeStyle = colors.accent;
-    ctx.lineWidth = 0.5;
+    ctx.lineWidth = 0.8;
     const spacing = 30;
     for (let x = 0; x < canvas.width; x += spacing) {
       ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
