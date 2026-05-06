@@ -150,9 +150,15 @@ const Paddle = (() => {
   }
 
   function onMouseMove(e) {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    moveToX((e.clientX - rect.left) * scaleX);
+    if (document.pointerLockElement === canvas) {
+      // Pointer lock: use relative movement
+      targetX += e.movementX;
+    } else {
+      // Normal mouse: use absolute position
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      targetX = (e.clientX - rect.left) * scaleX - w / 2;
+    }
   }
 
   function onTouch(e) {

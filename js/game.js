@@ -53,11 +53,23 @@ const Game = (() => {
 
     // Click/tap to launch
     canvas.addEventListener('click', () => {
-      if (state === STATE.WAITING || (state === STATE.PLAYING && Ball.isStuck())) launchBall();
+      if (state === STATE.WAITING || (state === STATE.PLAYING && Ball.isStuck())) {
+        launchBall();
+      }
+      // Request pointer lock when playing
+      if (state === STATE.PLAYING || state === STATE.WAITING) {
+        canvas.requestPointerLock();
+      }
     });
     canvas.addEventListener('touchend', e => {
       e.preventDefault();
       if (state === STATE.WAITING || (state === STATE.PLAYING && Ball.isStuck())) launchBall();
+    });
+
+    // Pointer lock change handler
+    document.addEventListener('pointerlockchange', () => {
+      const locked = document.pointerLockElement === canvas;
+      canvas.style.cursor = locked ? 'none' : 'none';
     });
 
     UI.init();
@@ -150,6 +162,7 @@ const Game = (() => {
       state = STATE.PAUSED;
       UI.showScreen('pause');
       Audio.stopMusic();
+      if (document.pointerLockElement) document.exitPointerLock();
     } else if (state === STATE.PAUSED) {
       resume();
     }
@@ -193,6 +206,7 @@ const Game = (() => {
 
   function toMenu() {
     if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    if (document.pointerLockElement) document.exitPointerLock();
     Audio.stopMusic();
     state = STATE.MENU;
     UI.showScreen('menu');
@@ -386,7 +400,7 @@ const Game = (() => {
 
   function drawGrid(colors) {
     ctx.save();
-    ctx.globalAlpha = 0.04;
+    ctx.globalAlpha = 0.12;
     ctx.strokeStyle = colors.accent;
     ctx.lineWidth = 0.5;
     const spacing = 30;
