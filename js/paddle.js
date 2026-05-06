@@ -37,8 +37,13 @@ const Paddle = (() => {
   }
 
   function update() {
-    // Smooth follow with lerp
-    x += (targetX - x) * 0.25;
+    // Keyboard movement
+    if (keys.left)  targetX -= KEYBOARD_SPEED;
+    if (keys.right) targetX += KEYBOARD_SPEED;
+
+    // Smoother lerp when using keyboard
+    const lerpFactor = (keys.left || keys.right) ? 0.12 : 0.25;
+    x += (targetX - x) * lerpFactor;
     // Boundaries
     x = Math.max(0, Math.min(canvasW - w, x));
     // Shake decay
@@ -119,6 +124,8 @@ const Paddle = (() => {
 
   // ---- Input handlers ----
   let canvas = null;
+  const keys = { left: false, right: false };
+  const KEYBOARD_SPEED = 3;
 
   function attachInputs(cvs) {
     canvas = cvs;
@@ -127,6 +134,19 @@ const Paddle = (() => {
     // Touch
     cvs.addEventListener('touchstart', onTouch, { passive: false });
     cvs.addEventListener('touchmove', onTouch, { passive: false });
+    // Keyboard
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
+  }
+
+  function onKeyDown(e) {
+    if (e.code === 'ArrowLeft'  || e.code === 'KeyA') { keys.left  = true; e.preventDefault(); }
+    if (e.code === 'ArrowRight' || e.code === 'KeyD') { keys.right = true; e.preventDefault(); }
+  }
+
+  function onKeyUp(e) {
+    if (e.code === 'ArrowLeft'  || e.code === 'KeyA') keys.left  = false;
+    if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = false;
   }
 
   function onMouseMove(e) {
